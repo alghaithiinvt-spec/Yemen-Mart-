@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ffffff">
+<title>لوحة إدارة سوق يمن مارت</title>
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--p:#1c1b1b;--o:#ff7a22;--oa:#c4510a;--bg:#f6f5f3;--t:#1c1b1b;--m:#6e6a66;--b:#e6e2dd;--red:#b42318}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--t);padding-bottom:30px}
+.ic{flex:none;vertical-align:middle}
+header{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:8px 14px}
+.brand{display:flex;align-items:center;gap:8px;color:var(--p)}
+.brand img{height:36px;width:auto;display:block}
+.brand b{font-size:16px}
+.badge{background:var(--o);color:var(--p);font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px}
+.ubtn{background:#fff;border:1px solid var(--b);color:var(--p);border-radius:22px;padding:7px 14px;font:inherit;font-size:13px;display:flex;align-items:center;gap:7px}
+main{padding:14px;max-width:900px;margin:auto}
+input{width:100%;font:inherit;padding:12px;border:1px solid var(--b);border-radius:12px;background:#fff;margin-bottom:10px;color:var(--t)}
+input:focus{outline:2px solid var(--o);border-color:var(--o)}
+.srch{position:relative}.srch .ic{position:absolute;right:13px;top:13px;color:var(--m)}.srch input{padding-right:42px}
+.btn{background:var(--p);color:#fff;border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:700;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;text-decoration:none}
+.btn.l{background:#fff;color:var(--p);border:1px solid var(--p)}
+.btn.r{background:#fff;color:var(--red);border:1px solid var(--red)}
+.btn.s{padding:8px 12px;font-size:13px;border-radius:10px}
+.btn:disabled{opacity:.5}
+.seg{display:flex;background:#e9e6e1;border-radius:12px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;border:0;background:none;padding:10px 4px;font:inherit;font-size:14px;border-radius:10px;font-weight:700;color:var(--m);display:flex;align-items:center;justify-content:center;gap:6px}
+.seg button.on{background:#fff;color:var(--p);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg button.on .ic{color:var(--o)}
+.n{background:var(--red);color:#fff;border-radius:10px;font-size:11px;padding:1px 7px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:620px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:#fff;border:1px solid var(--b);border-radius:14px;padding:14px}
+.stat .ic{color:var(--oa)}
+.stat .v{font-size:26px;font-weight:700;margin-top:4px}
+.stat .l{font-size:12.5px;color:var(--m)}
+.box{background:#fff;border:1px solid var(--b);border-radius:14px;padding:14px;margin-bottom:10px}
+.box h4{margin:0 0 6px;font-size:15px}
+.mt{color:var(--m);font-size:12.5px;margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.it{display:inline-flex;align-items:center;gap:4px}
+.pill{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:10px;background:#eee;color:var(--p)}
+.pill.red{background:#fde8e6;color:var(--red)}.pill.or{background:#fff0e3;color:var(--oa)}.pill.gr{background:#e6f4ea;color:#1e7a3c}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ad{display:flex;gap:12px}
+.ad .th{width:64px;height:64px;border-radius:10px;background:#ece9e5 center/cover;flex:none;display:flex;align-items:center;justify-content:center;color:#b3aca5}
+.ad .in{flex:1;min-width:0}
+.ad h4{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px;scrollbar-width:none}
+.chip{white-space:nowrap;background:#fff;border:1px solid var(--b);border-radius:22px;padding:7px 14px;font-size:13px;color:var(--t)}
+.chip.on{background:var(--p);color:#fff;border-color:var(--p)}
+.empty{text-align:center;color:var(--m);padding:44px 10px}
+.empty .ic{color:#b3aca5;margin-bottom:8px}
+.tools{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:var(--m)}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;padding:11px 20px;border-radius:22px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:50;max-width:90%;text-align:center}
+#toast.s{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><img src="logo.png" alt="YM"><b>لوحة الإدارة</b><span class="badge">مدير</span></div>
+  <button class="ubtn" id="ubtn" style="display:none" onclick="doLogout()"></button>
+</header>
+<main id="app"><div class="empty">جاري التحميل...</div></main>
+<div id="toast"></div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,collection,doc,getDocs,updateDoc,deleteDoc,query,orderBy,limit} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyAn5qA1raLAvm3-h06UCicrHOG6lGHZ6KQ",
+  authDomain:"yemen-mart-1bfac.firebaseapp.com",
+  projectId:"yemen-mart-1bfac",
+  appId:"1:702751338926:web:2ba0cabd27a6c986e9d83f"
+};
+
+const P={
+user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/>',
+search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+flag:'<path d="M5 21V4"/><path d="M5 4h12l-2.5 4 2.5 4H5"/>',
+trash:'<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/>',
+eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+eyeoff:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/>',
+link:'<path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+shield:'<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/>',
+chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+x:'<path d="M6 6l12 12M18 6 6 18"/>',
+tag:'<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1"/>',
+gavel:'<rect x="9.5" y="5" width="9" height="6" rx="1.2" transform="rotate(45 14 8)"/><path d="M11.9 10.1 4 18"/><path d="M3 21h11"/>',
+clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.3c2 .7 3.5 2.6 3.5 5.7"/>',
+refresh:'<path d="M20 11a8 8 0 0 0-14-4L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4l2-2"/><path d="M20 20v-5h-5"/>'
+};
+const ic=(n,s=20)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]||P.tag}</svg>`;
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const toast=m=>{const t=$("#toast");t.textContent=m;t.className="s";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="",2600)};
+const ago=ts=>{const m=Math.floor((Date.now()-ts)/60000);if(m<1)return"الآن";if(m<60)return"قبل "+m+" دقيقة";const h=Math.floor(m/60);if(h<24)return"قبل "+h+" ساعة";return"قبل "+Math.floor(h/24)+" يوم"};
+const img0=a=>(a.images&&a.images[0]&&String(a.images[0]).startsWith("data:image/"))?a.images[0]:"";
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const S={user:null,ads:[],reports:[],tab:"stats",showDone:false,filter:"all",q:""};
+
+window.login=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){if(e.code!=="auth/popup-closed-by-user")toast("تعذر تسجيل الدخول")}};
+window.doLogout=()=>signOut(auth);
+
+onAuthStateChanged(auth,async u=>{
+  S.user=u;
+  const b=$("#ubtn");
+  if(!u){b.style.display="none";$("#app").innerHTML=`<div class="empty">${ic("shield",46)}<p>هذه الصفحة خاصة بإدارة سوق يمن مارت.</p><button class="btn" onclick="login()">الدخول بحساب جوجل</button></div>`;return}
+  b.style.display="flex";b.innerHTML=`${ic("user",16)}<span>خروج</span>`;
+  await load();
+});
+
+async function load(){
+  $("#app").innerHTML='<div class="empty">جاري التحميل...</div>';
+  try{
+    const rs=await getDocs(query(collection(db,"reports"),orderBy("createdAt","desc"),limit(300)));
+    S.reports=rs.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){
+    $("#app").innerHTML=`<div class="empty">${ic("shield",46)}<p>هذا الحساب ليس لديه صلاحية الإدارة.</p><div class="mt" style="justify-content:center">الحساب الحالي: ${esc(S.user.email||"")}</div><br><button class="btn l" onclick="doLogout()">تسجيل الخروج وتجربة حساب آخر</button></div>`;
+    return;
+  }
+  try{
+    const as=await getDocs(query(collection(db,"ads"),orderBy("createdAt","desc"),limit(500)));
+    S.ads=as.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){toast("تعذر تحميل الإعلانات")}
+  render();
+}
+
+function render(){
+  const open=S.reports.filter(r=>r.status==="open").length;
+  const tabs=[["stats","chart","الإحصائيات"],["reports","flag","البلاغات"],["ads","tag","الإعلانات"]];
+  let h=`<div class="seg">${tabs.map(([k,i,t])=>`<button class="${S.tab===k?"on":""}" onclick="setTab('${k}')">${ic(i,17)}${t}${k==="reports"&&open?`<span class="n">${open}</span>`:""}</button>`).join("")}</div>`;
+  $("#app").innerHTML=h+`<div id="body"></div>`;
+  if(S.tab==="stats")viewStats();else if(S.tab==="reports")viewReports();else viewAds();
+}
+window.setTab=t=>{S.tab=t;render()};
+
+/* ---- Stats ---- */
+function viewStats(){
+  const A=S.ads,now=Date.now();
+  const cards=[
+    ["tag",A.length,"إجمالي الإعلانات"],
+    ["clock",A.filter(a=>now-a.createdAt<864e5).length,"نُشر آخر 24 ساعة"],
+    ["gavel",A.filter(a=>a.type==="auction"&&a.status!=="hidden"&&a.status!=="sold"&&a.endAt>now).length,"مزادات جارية"],
+    ["check",A.filter(a=>a.status==="sold").length,"تم بيعها"],
+    ["flag",S.reports.filter(r=>r.status==="open").length,"بلاغات مفتوحة"],
+    ["eyeoff",A.filter(a=>a.status==="hidden").length,"إعلانات مخفية"],
+    ["users",new Set(A.map(a=>a.uid)).size,"عدد الناشرين"],
+    ["gavel",A.reduce((s,a)=>s+(a.bidCount||0),0),"إجمالي المزايدات"]
+  ];
+  $("#body").innerHTML=`<div class="stats">${cards.map(([i,v,l])=>`<div class="stat">${ic(i,22)}<div class="v">${v}</div><div class="l">${l}</div></div>`).join("")}</div>
+  <div class="tools" style="margin-top:12px"><span>الأرقام من آخر 500 إعلان</span><button class="btn l s" onclick="load()">${ic("refresh",15)}تحديث</button></div>`;
+}
+
+/* ---- Reports ---- */
+function viewReports(){
+  const openCnt={};S.reports.filter(r=>r.status==="open").forEach(r=>openCnt[r.adId]=(openCnt[r.adId]||0)+1);
+  const list=S.reports.filter(r=>S.showDone||r.status==="open");
+  let h=`<div class="tools"><span>${list.length} بلاغ</span><button class="btn l s" onclick="S.showDone=!S.showDone;viewReports()">${S.showDone?"إخفاء المعالَجة":"عرض المعالَجة"}</button></div>`;
+  if(!list.length)h+=`<div class="empty">${ic("check",44)}<p>لا توجد بلاغات مفتوحة</p></div>`;
+  h+=list.map(r=>{
+    const a=S.ads.find(x=>x.id===r.adId);
+    const isOpen=r.status==="open";
+    return `<div class="box"><h4>${a?`<a href="index.html#/ad/${esc(a.id)}" target="_blank" rel="noopener" style="color:inherit">${esc(a.title)}</a>`:esc(r.adTitle||"إعلان")}</h4>
+    <div class="mt"><span class="pill red">${esc(r.reason)}</span>${isOpen&&openCnt[r.adId]>1?`<span class="pill or">${openCnt[r.adId]} بلاغات على هذا الإعلان</span>`:""}${!isOpen?`<span class="pill gr">${r.status==="dismissed"?"تم التجاهل":"تمت المعالجة"}</span>`:""}${!a?`<span class="pill">الإعلان محذوف</span>`:a.status==="hidden"?`<span class="pill">مخفي</span>`:""}</div>
+    ${r.note?`<p style="margin:8px 0 0;line-height:1.7;font-size:14px">${esc(r.note)}</p>`:""}
+    <div class="mt"><span class="it">${ic("user",13)} ${esc(r.userName)}</span><span>${ago(r.createdAt)}</span></div>
+    ${isOpen?`<div class="acts">${a&&a.status!=="hidden"?`<button class="btn s" onclick="hideAd('${esc(r.adId)}')">${ic("eyeoff",15)}إخفاء الإعلان</button>`:""}${a?`<button class="btn r s" onclick="delAd('${esc(r.adId)}')">${ic("trash",15)}حذف الإعلان</button>`:""}<button class="btn l s" onclick="dismiss('${esc(r.id)}')">${ic("x",15)}تجاهل البلاغ</button></div>`:""}</div>`;
+  }).join("");
+  $("#body").innerHTML=h;
+}
+async function closeReportsFor(adId,status){
+  const rs=S.reports.filter(r=>r.adId===adId&&r.status==="open");
+  await Promise.all(rs.map(r=>updateDoc(doc(db,"reports",r.id),{status}).then(()=>{r.status=status})));
+}
+window.dismiss=async id=>{
+  try{await updateDoc(doc(db,"reports",id),{status:"dismissed"});S.reports.find(r=>r.id===id).status="dismissed";toast("تم تجاهل البلاغ");render()}catch(e){toast("تعذر التنفيذ")}
+};
+window.hideAd=async id=>{
+  try{await updateDoc(doc(db,"ads",id),{status:"hidden"});const a=S.ads.find(x=>x.id===id);if(a)a.status="hidden";await closeReportsFor(id,"resolved");toast("تم إخفاء الإعلان");render()}catch(e){toast("تعذر التنفيذ")}
+};
+window.showAd=async id=>{
+  try{await updateDoc(doc(db,"ads",id),{status:"active"});const a=S.ads.find(x=>x.id===id);if(a)a.status="active";toast("تم إظهار الإعلان");render()}catch(e){toast("تعذر التنفيذ")}
+};
+window.delAd=async id=>{
+  if(!confirm("حذف الإعلان نهائياً؟ لا يمكن التراجع."))return;
+  try{await deleteDoc(doc(db,"ads",id));S.ads=S.ads.filter(x=>x.id!==id);await closeReportsFor(id,"resolved");toast("تم حذف الإعلان");render()}catch(e){toast("تعذر التنفيذ")}
+};
+
+/* ---- Ads ---- */
+function viewAds(){
+  const F=[["all","الكل"],["auction","مزادات"],["hidden","مخفية"],["sold","مباعة"]];
+  $("#body").innerHTML=`<div class="srch">${ic("search",18)}<input id="aq" placeholder="ابحث بعنوان الإعلان أو اسم الناشر" value="${esc(S.q)}" oninput="S.q=this.value;fillAds()"></div>
+  <div class="chips">${F.map(([k,t])=>`<span class="chip ${S.filter===k?"on":""}" onclick="S.filter='${k}';viewAds()">${t}</span>`).join("")}</div><div id="alist"></div>`;
+  fillAds();
+}
+function fillAds(){
+  const q=S.q.trim().toLowerCase();
+  const l=S.ads.filter(a=>(S.filter==="all"||(S.filter==="auction"&&a.type==="auction")||(S.filter==="hidden"&&a.status==="hidden")||(S.filter==="sold"&&a.status==="sold"))&&(!q||(a.title+" "+a.userName).toLowerCase().includes(q)));
+  $("#alist").innerHTML=l.length?l.slice(0,100).map(a=>{
+    const im=img0(a);
+    return `<div class="box"><div class="ad"><div class="th" style="${im?`background-image:url(${im})`:""}">${im?"":ic("tag",24)}</div><div class="in"><h4>${esc(a.title)}</h4>
+    <div class="mt"><span>${esc(a.city)}</span><span>${esc(a.userName)}</span><span>${ago(a.createdAt)}</span></div>
+    <div class="mt">${a.type==="auction"?'<span class="pill or">مزاد</span>':""}${a.status==="hidden"?'<span class="pill red">مخفي</span>':""}${a.status==="sold"?'<span class="pill gr">مباع</span>':""}</div></div></div>
+    <div class="acts"><a class="btn l s" href="index.html#/ad/${esc(a.id)}" target="_blank" rel="noopener">${ic("link",15)}فتح</a>${a.status==="hidden"?`<button class="btn l s" onclick="showAd('${esc(a.id)}')">${ic("eye",15)}إظهار</button>`:`<button class="btn s" onclick="hideAd('${esc(a.id)}')">${ic("eyeoff",15)}إخفاء</button>`}<button class="btn r s" onclick="delAd('${esc(a.id)}')">${ic("trash",15)}حذف</button></div></div>`;
+  }).join(""):`<div class="empty">${ic("search",44)}<p>لا توجد نتائج</p></div>`;
+}
+window.S=S;window.load=load;window.viewReports=viewReports;window.viewAds=viewAds;window.fillAds=fillAds;
+</script>
+</body>
+</html>

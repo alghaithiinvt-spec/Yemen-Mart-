@@ -1,6 +1,6 @@
 {
-  "name": "سوق اليمن",
-  "short_name": "سوق اليمن",
+  "name": "سوق يمن مارت",
+  "short_name": "يمن مارت",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
