@@ -164,9 +164,135 @@ label{font-size:13px;color:var(--m);display:block;margin-bottom:4px}
 .sw.on:after{right:21px}
 #toast{box-shadow:0 6px 18px rgba(0,0,0,.25);font-weight:500}
 .vh{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));right:0;left:0;text-align:center;color:rgba(255,255,255,.6);font-size:12px;pointer-events:none}
+/* ---------- افتتاحية التطبيق ---------- */
+#spl{position:fixed;inset:0;z-index:100;background:#ff7a22;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:splOut .4s ease 5s forwards}
+@keyframes splOut{to{opacity:0;visibility:hidden}}
+.brand img{transition:opacity .25s}
+html.spl-on .brand img{opacity:0;animation:splShow 0s 5.2s forwards}
+@keyframes splShow{to{opacity:1}}
+.sp-ring{position:absolute;left:50%;top:46%;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:2px solid rgba(255,255,255,.8);opacity:0;animation:sprg 1s ease-out forwards}
+.sp-ring.r2{animation-delay:.2s}
+@keyframes sprg{0%{opacity:.9;transform:scale(.2)}100%{opacity:0;transform:scale(6.5)}}
+.sp-sw{position:absolute;inset:0;width:100%;height:100%}
+.sp-sw path{fill:none;stroke-linecap:round;stroke-width:2.2;stroke-dasharray:1;stroke-dashoffset:1;animation:spdr .7s ease-out forwards,spfo .25s ease .5s forwards}
+@keyframes spdr{to{stroke-dashoffset:0}}
+@keyframes spfo{to{opacity:0}}
+.sp-ink,.sp-wipe{position:absolute;inset:0;clip-path:circle(0% at 50% 46%);animation:spwp .78s cubic-bezier(.7,0,.2,1) forwards}
+.sp-ink{background:#1c1b1b;animation-delay:.03s}
+.sp-wipe{background:#f6f5f3;animation-delay:.15s}
+@keyframes spwp{to{clip-path:circle(150% at 50% 46%)}}
+.sp-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;padding-bottom:6vh}
+.sp-logo{width:min(66vw,310px);height:auto;overflow:visible;transform-origin:50% 100%;animation:spim .45s ease 1.64s}
+@keyframes spim{0%{transform:scale(1)}30%{transform:scale(1.035,.965)}60%{transform:scale(.99,1.012)}100%{transform:scale(1)}}
+.sp-logo .d{stroke-dasharray:1;stroke-dashoffset:1;animation:spdr .55s cubic-bezier(.6,0,.3,1) forwards}
+.sp-logo .d1{animation-delay:.5s}
+.sp-logo .d2{animation-delay:.72s}
+.sp-logo .leg{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:splg .28s ease-out 1.2s forwards}
+@keyframes splg{to{transform:scaleY(1)}}
+.sp-logo .bag{transform-box:fill-box;transform-origin:50% 0;opacity:0;animation:spbg .65s ease-out 1.3s forwards}
+@keyframes spbg{0%{opacity:0;transform:translateY(-160px) rotate(-20deg)}14%{opacity:1}55%{transform:translateY(10px) rotate(8deg)}72%{transform:translateY(-5px) rotate(-4deg)}88%{transform:translateY(1px) rotate(1.5deg)}100%{opacity:1;transform:none}}
+.sp-t,.sp-s{display:flex;align-items:center}
+.sp-t{gap:.3em;font:700 24px/1.2 'Tajawal',sans-serif;color:#1c1b1b}
+.sp-s{gap:.6em;font:500 13px 'Tajawal',sans-serif;color:#6e6a66}
+.sp-t span,.sp-s span{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);animation:spw .55s cubic-bezier(.2,.8,.2,1) forwards}
+.sp-s b{color:#ff7a22;opacity:0;animation:spw .4s ease 2.1s forwards}
+@keyframes spw{to{opacity:1;transform:none;filter:blur(0)}}
+.sp-fx{position:absolute;inset:0;pointer-events:none}
+.sp-hit{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:3px solid #ff7a22;opacity:0;animation:sphit .6s ease-out forwards}
+@keyframes sphit{0%{opacity:.95;transform:scale(.3)}100%{opacity:0;transform:scale(3.6)}}
+.sp-fly .sp-logo,.sp-fly .sp-logo *{animation:none!important}
+.sp-fly .sp-logo{width:100%;height:100%}
+.sp-fly .d{stroke-dashoffset:0}
+.sp-fly .leg{transform:none}
+.sp-fly .bag{opacity:1;transform:none}
 </style>
 </head>
 <body>
+<div id="spl" role="presentation" aria-hidden="true">
+  <i class="sp-ring"></i><i class="sp-ring r2"></i>
+  <svg class="sp-sw" viewBox="0 0 100 200" preserveAspectRatio="xMidYMid slice">
+    <path pathLength="1" stroke="#ef4a5a" d="M12 170 C 26 110 32 76 56 40"/>
+    <path pathLength="1" stroke="#4a6cf7" d="M44 168 C 38 134 56 112 84 104" style="animation-delay:.08s,.55s"/>
+    <path pathLength="1" stroke="#1c1b1b" d="M70 70 C 46 82 40 106 68 118" style="animation-delay:.16s,.6s"/>
+  </svg>
+  <div class="sp-ink"></div>
+  <div class="sp-wipe"></div>
+  <div class="sp-in">
+    <svg class="sp-logo" viewBox="525 375 895 590">
+      <defs><linearGradient id="spg" gradientUnits="userSpaceOnUse" x1="0" y1="380" x2="0" y2="960"><stop offset="0" stop-color="#3d3b3b"/><stop offset="1" stop-color="#151414"/></linearGradient></defs>
+      <g fill="none" stroke="url(#spg)" stroke-width="95" stroke-linejoin="round">
+        <path class="d d1" pathLength="1" d="M590 478 L771 782 L771 957"/>
+        <path class="d d2" pathLength="1" d="M771 778 L945 480 L1090 848 L1228 495"/>
+      </g>
+      <polygon class="leg" points="1252,585 1322,585 1403,957 1305,957" fill="url(#spg)"/>
+      <g class="bag">
+        <path d="M1268 442 C1262 384 1350 384 1348 442" fill="none" stroke="#1c1b1b" stroke-width="13" stroke-linecap="round"/>
+        <g fill="#ff7a22" stroke="#1c1b1b" stroke-width="5" stroke-linejoin="round">
+          <polygon class="bagc" points="1248,442 1372,442 1384,578 1252,592"/>
+          <polygon points="1228,442 1248,442 1252,592 1208,568"/>
+        </g>
+      </g>
+    </svg>
+    <div class="sp-t"><span style="animation-delay:1.8s">سوق</span><span style="animation-delay:1.9s">يمن</span><span style="animation-delay:2s">مارت</span></div>
+    <div class="sp-s"><span style="animation-delay:2.1s">بِع</span><b>•</b><span style="animation-delay:2.2s">اشترِ</span><b style="animation-delay:2.25s">•</b><span style="animation-delay:2.3s">زايد</span></div>
+  </div>
+  <div class="sp-fx"></div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById("spl");if(!el)return;
+  var seen=false;try{seen=sessionStorage.getItem("ym_splash")==="1"}catch(e){}
+  var h=location.hash;
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(seen||reduce||(h&&h!=="#"&&h!=="#/")){el.remove();return}
+  try{sessionStorage.setItem("ym_splash","1")}catch(e){}
+  var root=document.documentElement,t0=Date.now(),out=false,gone=false,tm;
+  root.classList.add("spl-on");
+  function rm(){if(gone)return;gone=true;root.classList.remove("spl-on");el.remove()}
+  function fade(){
+    var a=el.animate?el.animate([{opacity:1},{opacity:0}],{duration:300,fill:"forwards"}):null;
+    if(a)a.onfinish=rm;else rm();
+  }
+  function exit(simple){
+    if(out)return;out=true;clearTimeout(tm);
+    el.style.animation="none";
+    var lg=el.querySelector(".sp-logo"),im=document.querySelector(".brand img");
+    var tr=im&&im.getBoundingClientRect();
+    if(simple||!el.animate||!lg||!tr||!tr.width){fade();return}
+    var r=lg.getBoundingClientRect();
+    var c=document.createElement("div");
+    c.className="sp-fly";
+    c.style.cssText="position:fixed;z-index:101;left:"+r.left+"px;top:"+r.top+"px;width:"+r.width+"px;height:"+r.height+"px;transform-origin:0 0;pointer-events:none";
+    c.innerHTML=lg.outerHTML.replace(/spg/g,"spg2");
+    document.body.appendChild(c);
+    el.animate([{opacity:1},{opacity:0}],{duration:420,delay:120,fill:"forwards"});
+    var dx=tr.left-r.left,dy=tr.top-r.top,s=tr.width/r.width;
+    var f=c.animate([{transform:"none"},{transform:"translate("+dx+"px,"+dy+"px) scale("+s+")"}],{duration:650,easing:"cubic-bezier(.65,0,.25,1)",fill:"forwards"});
+    f.onfinish=function(){root.classList.remove("spl-on");setTimeout(function(){c.remove()},280);rm()};
+  }
+  el.addEventListener("click",function(){exit(Date.now()-t0<2000)});
+  tm=setTimeout(exit,2900);
+  setTimeout(function(){
+    var b=el.querySelector(".bagc");if(!b||out)return;
+    var r=b.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    var fx=el.querySelector(".sp-fx"),cols=["#ff9d3d","#4a6cf7","#ef4a5a","#1c1b1b"];
+    var sh=["width:3px;height:14px;border-radius:2px","width:7px;height:7px;border-radius:50%","width:7px;height:7px;border-radius:2px","width:9px;height:9px;clip-path:polygon(50% 0,0 100%,100% 100%)"];
+    var ring=document.createElement("i");ring.className="sp-hit";ring.style.left=cx+"px";ring.style.top=cy+"px";fx.appendChild(ring);
+    for(var k=0;k<42;k++){
+      var a=Math.random()*6.283,d=80+Math.random()*130,i=document.createElement("i");
+      i.style.cssText="position:absolute;left:"+cx+"px;top:"+cy+"px;margin:-4px 0 0 -4px;background:"+cols[k%4]+";"+sh[k%4];
+      fx.appendChild(i);
+      if(!i.animate)continue;
+      var dx=Math.cos(a)*d,dy=Math.sin(a)*d,rt=(Math.random()-.5)*720;
+      i.animate([
+        {transform:"translate(0,0) rotate(0deg) scale(1)",opacity:1},
+        {transform:"translate("+dx*.75+"px,"+(dy*.75-24)+"px) rotate("+rt*.5+"deg) scale(1)",opacity:1,offset:.45},
+        {transform:"translate("+dx+"px,"+(dy+90)+"px) rotate("+rt+"deg) scale(.35)",opacity:0}
+      ],{duration:900+Math.random()*500,easing:"cubic-bezier(.2,.7,.35,1)",fill:"forwards"});
+    }
+  },1680);
+})();
+</script>
 <header>
   <a class="brand" href="#/"><img src="logo.png" alt="YM"><span>سوق يمن مارت</span></a>
   <button class="ubtn" id="ubtn" onclick="authBtn()"></button>
