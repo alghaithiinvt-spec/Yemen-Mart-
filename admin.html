@@ -112,7 +112,9 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const toast=m=>{const t=$("#toast");t.textContent=m;t.className="s";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="",2600)};
 const ago=ts=>{const m=Math.floor((Date.now()-ts)/60000);if(m<1)return"الآن";if(m<60)return"قبل "+m+" دقيقة";const h=Math.floor(m/60);if(h<24)return"قبل "+h+" ساعة";return"قبل "+Math.floor(h/24)+" يوم"};
-const img0=a=>(a.images&&a.images[0]&&String(a.images[0]).startsWith("data:image/"))?a.images[0]:"";
+const IMG_RE=/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+\/=]+$/;
+const safeImg=s=>(typeof s==="string"&&s.length<400000&&IMG_RE.test(s))?s:"";
+const img0=a=>(a.images&&a.images[0])?safeImg(a.images[0]):"";
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);

@@ -8,27 +8,81 @@ service cloud.firestore {
         && request.auth.token.email_verified == true;
     }
 
+    // صورة واحدة: نص يبدأ بـ data:image/jpeg;base64, وحجمه معقول
+    function imgOk(imgs, i) {
+      return imgs.size() <= i
+        || (imgs[i] is string
+            && imgs[i].size() < 330000
+            && imgs[i].matches('data:image/jpeg;base64,.*'));
+    }
+
+    function validAuction(d) {
+      return d.startPrice is number && d.startPrice > 0
+        && d.currentBid == d.startPrice
+        && d.bidCount == 0
+        && d.step is number && d.step >= 1
+        && d.endAt is number
+        && d.endAt > request.time.toMillis() - 86400000
+        && d.endAt < request.time.toMillis() + 9 * 86400000
+        && d.topBidderUid == ''
+        && d.topBidderName == '';
+    }
+
+    function validAd() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['type','title','desc','phone','category','city','currency','images',
+                               'uid','userName','createdAt','status','price',
+                               'startPrice','currentBid','bidCount','step','endAt','topBidderUid','topBidderName'])
+        && d.uid == request.auth.uid
+        && d.type in ['ad', 'auction']
+        && d.status == 'active'
+        && d.title is string && d.title.size() >= 3 && d.title.size() <= 100
+        && d.desc is string && d.desc.size() >= 5 && d.desc.size() <= 2000
+        && d.phone is string && d.phone.size() >= 7 && d.phone.size() <= 30
+        && d.category is string && d.category.size() <= 40
+        && d.city is string && d.city.size() <= 40
+        && d.currency in ['YER', 'SAR', 'USD']
+        && d.userName is string && d.userName.size() <= 60
+        && d.createdAt is number
+        && d.images is list && d.images.size() <= 3
+        && imgOk(d.images, 0) && imgOk(d.images, 1) && imgOk(d.images, 2)
+        && (d.type == 'ad'
+            ? (d.price is number && d.price >= 0)
+            : validAuction(d));
+    }
+
+    // مزايدة: تغيير 4 حقول فقط، بالحد الأدنى للزيادة، وليس من صاحب المزاد
+    function validBidUpdate() {
+      let n = request.resource.data;
+      let o = resource.data;
+      return o.type == 'auction'
+        && o.get('status', 'active') == 'active'
+        && request.time.toMillis() < o.endAt
+        && request.auth.uid != o.uid
+        && n.diff(o).affectedKeys().hasOnly(['currentBid','bidCount','topBidderUid','topBidderName'])
+        && n.currentBid is number
+        && n.currentBid >= (o.bidCount == 0 ? o.startPrice : o.currentBid + o.step)
+        && n.bidCount == o.bidCount + 1
+        && n.topBidderUid == request.auth.uid
+        && n.topBidderName is string && n.topBidderName.size() <= 60;
+    }
+
     match /ads/{adId} {
       allow read: if true;
 
-      allow create: if request.auth != null
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.title is string
-        && request.resource.data.title.size() <= 100
-        && request.resource.data.images.size() <= 3;
+      allow create: if request.auth != null && validAd();
 
       allow update: if request.auth != null && (
-        isAdmin()
-        || (resource.data.uid == request.auth.uid && resource.data.status != 'hidden')
-        || (
-          resource.data.type == 'auction'
-          && request.time.toMillis() < resource.data.endAt
-          && request.resource.data.diff(resource.data).affectedKeys()
-               .hasOnly(['currentBid','bidCount','topBidderUid','topBidderName'])
-          && request.resource.data.currentBid >= resource.data.currentBid
-          && request.resource.data.bidCount == resource.data.bidCount + 1
-          && request.resource.data.topBidderUid == request.auth.uid
-        )
+        // الأدمن: تغيير الحالة فقط (إخفاء / إظهار)
+        (isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']))
+        // صاحب الإعلان: الحالة فقط (نشط / مباع)، ولا يستطيع إظهار إعلان أخفاه الأدمن
+        || (resource.data.uid == request.auth.uid
+          && resource.data.get('status', 'active') != 'hidden'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+          && request.resource.data.status in ['active', 'sold'])
+        // مزايدة
+        || validBidUpdate()
       );
 
       allow delete: if request.auth != null
@@ -36,8 +90,15 @@ service cloud.firestore {
 
       match /bids/{bidId} {
         allow read: if true;
+        // المزايدة تُسجَّل فقط مع تحديث المزاد في نفس العملية وبنفس المبلغ
         allow create: if request.auth != null
-          && request.resource.data.uid == request.auth.uid;
+          && request.resource.data.keys().hasOnly(['uid','name','amount','at'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.name is string && request.resource.data.name.size() <= 60
+          && request.resource.data.amount is number
+          && request.resource.data.at is number
+          && getAfter(/databases/$(database)/documents/ads/$(adId)).data.currentBid == request.resource.data.amount
+          && getAfter(/databases/$(database)/documents/ads/$(adId)).data.topBidderUid == request.auth.uid;
       }
     }
 
@@ -53,7 +114,11 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, delete: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['favs','fcmTokens','notifOn'])
+        && request.resource.data.get('favs', []).size() <= 300
+        && request.resource.data.get('fcmTokens', []).size() <= 20;
     }
   }
 }

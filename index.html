@@ -164,7 +164,9 @@ const money=(n,c)=>fmt(n)+" "+(CUR[c]||"");
 const toast=m=>{const t=$("#toast");t.textContent=m;t.className="s";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="",2600)};
 const ago=ts=>{const m=Math.floor((Date.now()-ts)/60000);if(m<1)return"الآن";if(m<60)return"قبل "+m+" دقيقة";const h=Math.floor(m/60);if(h<24)return"قبل "+h+" ساعة";return"قبل "+Math.floor(h/24)+" يوم"};
 const left=end=>{let s=Math.floor((end-Date.now())/1000);if(s<=0)return"انتهى";const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);return(d?d+"ي ":"")+(h||d?h+"س ":"")+m+"د"};
-const img0=a=>(a.images&&a.images[0]&&a.images[0].startsWith("data:image/"))?a.images[0]:"";
+const IMG_RE=/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+\/=]+$/;
+const safeImg=s=>(typeof s==="string"&&s.length<400000&&IMG_RE.test(s))?s:"";
+const img0=a=>(a.images&&a.images[0])?safeImg(a.images[0]):"";
 
 /* ---------- Static UI ---------- */
 $("#nav").innerHTML=[["#/","n1","home","الرئيسية"],["#/auctions","n2","gavel","المزادات"],["#/add","n3","plus","انشر"],["#/favs","n4","heart","المفضلة"],["#/mine","n5","user","حسابي"]]
@@ -319,7 +321,7 @@ function viewAd(id){
   if(!a){$("#app").innerHTML='<div class="empty">جاري التحميل...</div>';return}
   const au=a.type==="auction";const mine=S.user&&S.user.uid===a.uid;
   if(a.status==="hidden"&&!mine){$("#app").innerHTML=empty("flag","هذا الإعلان غير متاح");return}
-  const imgs=(a.images||[]).filter(i=>i.startsWith("data:image/"));
+  const imgs=(a.images||[]).map(safeImg).filter(Boolean);
   let h=imgs.length?`<div class="gal">${imgs.map(i=>`<img src="${i}" alt="">`).join("")}</div>`:"";
   h+=`<div class="box ${au?"auc":""}"><h2 style="margin:0 0 8px;font-size:19px">${esc(a.title)}</h2>`;
   if(au){
@@ -346,8 +348,8 @@ function liveDetail(){
   if(!$("#curP")){viewAd(id);return}
   const ended=Date.now()>=a.endAt;
   $("#curP").textContent=money(a.bidCount?a.currentBid:a.startPrice,a.currency);
-  $("#meta").innerHTML=`<span class="it">${ic("gavel",14)}${a.bidCount} مزايدة</span><span class="it">${ic("clock",14)}<b data-end="${a.endAt}">${left(a.endAt)}</b></span>`+(a.bidCount?`<span class="it">${ic("user",14)}الأعلى: ${esc(a.topBidderName)}</span>`:"");
-  const box=$("#bidBox");const min=a.bidCount?a.currentBid+a.step:a.startPrice;
+  $("#meta").innerHTML=`<span class="it">${ic("gavel",14)}${Number(a.bidCount)||0} مزايدة</span><span class="it">${ic("clock",14)}<b data-end="${Number(a.endAt)||0}">${left(a.endAt)}</b></span>`+(a.bidCount?`<span class="it">${ic("user",14)}الأعلى: ${esc(a.topBidderName)}</span>`:"");
+  const box=$("#bidBox");const min=a.bidCount?(Number(a.currentBid)||0)+(Number(a.step)||1):(Number(a.startPrice)||0);
   if(ended){
     box.innerHTML=a.bidCount?`<div class="win">${ic("trophy",20)}انتهى المزاد. الفائز: ${esc(a.topBidderName)}</div><div class="mt">بمبلغ ${money(a.currentBid,a.currency)}. تواصل مع البائع لإتمام البيع.</div>`:`<b>انتهى المزاد بدون مزايدات</b>`;
   }else if(S.user&&S.user.uid===a.uid){
