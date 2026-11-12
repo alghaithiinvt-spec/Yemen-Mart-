@@ -7,7 +7,11 @@
 <title>سوق يمن مارت</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="يمن مارت">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--p:#1c1b1b;--o:#ff7a22;--oa:#c4510a;--bg:#f6f5f3;--t:#1c1b1b;--m:#6e6a66;--b:#e6e2dd}
@@ -89,9 +93,37 @@ label{font-size:13px;color:var(--m);display:block;margin-bottom:4px}
 .h3 .ic{color:var(--oa)}
 #toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--p);color:#fff;padding:11px 20px;border-radius:22px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:50;max-width:90%;text-align:center}
 #toast.s{opacity:1}
+#inst{position:fixed;left:10px;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:700px;margin:auto;background:var(--p);color:#fff;border-radius:16px;padding:11px 12px;display:none;align-items:center;gap:10px;z-index:30;box-shadow:0 6px 20px rgba(0,0,0,.28);font-size:13px;line-height:1.55}
+#inst.s{display:flex}
+#inst img{width:40px;height:40px;border-radius:10px;background:#fff;flex:none}
+#inst span{flex:1}
+#inst b{display:block;font-size:14px}
+#inst button{border:0;border-radius:10px;font:inherit;font-weight:700;padding:8px 14px}
+#inst .go{background:var(--o);color:var(--p)}
+#inst .x{background:none;color:#fff;padding:6px 8px;font-size:20px;line-height:1}
 .warn{background:#fff6ee;border:1px solid #ffd9bd;padding:16px;border-radius:14px;line-height:1.9}
 .warn b{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .warn .ic{color:var(--oa)}
+.sk{background:linear-gradient(90deg,#ece9e5 25%,#f7f5f2 37%,#ece9e5 63%);background-size:400% 100%;animation:shm 1.4s ease infinite;border-radius:8px}
+@keyframes shm{0%{background-position:100% 50%}100%{background-position:0 50%}}
+.card.skc{pointer-events:none}
+.card{transition:transform .12s}
+.card:active{transform:scale(.98)}
+.card .im{overflow:hidden}
+.card .im img{width:100%;height:100%;object-fit:cover;display:block}
+.tag.hot{background:#b42318}.tag.hot .ic{color:#fff}
+.tag.new{background:var(--o);color:var(--p)}
+.gal img{cursor:zoom-in}
+#vw{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:60;display:none;flex-direction:column}
+#vw.s{display:flex}
+.vt{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.vt::-webkit-scrollbar{display:none}
+.vs{flex:none;width:100%;height:100%;scroll-snap-align:center;overflow:auto;display:flex}
+.vs img{max-width:100%;max-height:100%;object-fit:contain;margin:auto;transition:width .2s}
+.vs img.z{max-width:none;max-height:none;width:230%;height:auto}
+.vx{position:absolute;top:calc(10px + env(safe-area-inset-top));left:12px;z-index:2;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:26px;line-height:1}
+.vn{position:absolute;top:calc(20px + env(safe-area-inset-top));right:0;left:0;text-align:center;color:#fff;font-size:14px;pointer-events:none;z-index:1}
+.vh{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));right:0;left:0;text-align:center;color:rgba(255,255,255,.6);font-size:12px;pointer-events:none}
 </style>
 </head>
 <body>
@@ -101,6 +133,8 @@ label{font-size:13px;color:var(--m);display:block;margin-bottom:4px}
 </header>
 <main id="app"></main>
 <nav id="nav"></nav>
+<div id="inst"></div>
+<div id="vw"></div>
 <div id="toast"></div>
 
 <script type="module">
@@ -182,7 +216,7 @@ if(firebaseConfig.apiKey.startsWith("PUT_")){
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
-const S={user:null,ads:[],favs:[],cat:"",city:"",q:"",unsubBids:null};
+const S={user:null,ads:[],loaded:false,favs:[],cat:"",city:"",q:"",unsubBids:null};
 window.S=S;
 
 /* ---------- Auth ---------- */
@@ -245,13 +279,57 @@ window.enableNotifs=async()=>{
   }catch(e){toast("تعذر التفعيل: "+(e.code||e.message||""))}
 };
 
+/* ---------- تثبيت التطبيق (PWA) ---------- */
+if("serviceWorker" in navigator)navigator.serviceWorker.register("firebase-messaging-sw.js").catch(()=>{});
+let _ip=null;
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
+const instHidden=()=>{try{return Date.now()-Number(localStorage.getItem("ym_inst")||0)<14*864e5}catch(e){return false}};
+function showInst(){
+  const el=$("#inst");
+  if(isStandalone()||instHidden())return;
+  const head='<img src="icon-192.png" alt="">';
+  if(_ip)el.innerHTML=head+'<span><b>ثبّت تطبيق يمن مارت</b>وصول أسرع وتنبيهات المزادات</span><button class="go" onclick="doInstall()">تثبيت</button><button class="x" onclick="closeInst()" aria-label="إغلاق">×</button>';
+  else if(isIOS())el.innerHTML=head+'<span><b>ثبّت التطبيق</b>اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»</span><button class="x" onclick="closeInst()" aria-label="إغلاق">×</button>';
+  else return;
+  el.classList.add("s");
+}
+window.doInstall=async()=>{if(!_ip)return;_ip.prompt();try{await _ip.userChoice}catch(e){}_ip=null;$("#inst").classList.remove("s")};
+window.closeInst=()=>{try{localStorage.setItem("ym_inst",String(Date.now()))}catch(e){}$("#inst").classList.remove("s")};
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();_ip=e;showInst()});
+addEventListener("appinstalled",()=>$("#inst").classList.remove("s"));
+if(isIOS())setTimeout(showInst,2500);
+
 /* ---------- Data ---------- */
 onSnapshot(query(collection(db,"ads"),orderBy("createdAt","desc"),limit(200)),snap=>{
-  S.ads=snap.docs.map(d=>({id:d.id,...d.data()}));
+  S.ads=snap.docs.map(d=>({id:d.id,...d.data()}));S.loaded=true;
   const r=route()[0];
   if(r==="ad")liveDetail();
   else if(r!=="add"&&!(document.activeElement&&document.activeElement.id==="q"))render();
 },e=>{$("#app").innerHTML='<div class="warn">تعذر قراءة البيانات. تأكد من إنشاء Firestore ونشر القواعد.</div>'});
+
+/* ---------- هياكل التحميل ---------- */
+const skCard=()=>'<div class="card skc"><div class="im sk" style="border-radius:0"></div><div class="bd"><div class="sk" style="height:13px;width:90%;margin-bottom:8px"></div><div class="sk" style="height:13px;width:60%;margin-bottom:12px"></div><div class="sk" style="height:16px;width:45%"></div></div></div>';
+const skGrid=()=>'<div class="grid">'+skCard().repeat(6)+'</div>';
+const skDetail=()=>'<div class="sk" style="height:260px;border-radius:14px;margin-bottom:12px"></div><div class="box"><div class="sk" style="height:22px;width:70%;margin-bottom:12px"></div><div class="sk" style="height:28px;width:40%;margin-bottom:12px"></div><div class="sk" style="height:14px;width:85%"></div></div><div class="box"><div class="sk" style="height:14px;width:30%;margin-bottom:10px"></div><div class="sk" style="height:14px;width:95%;margin-bottom:8px"></div><div class="sk" style="height:14px;width:75%"></div></div>';
+
+/* ---------- عارض الصور ---------- */
+const hideViewer=()=>{$("#vw").classList.remove("s");$("#vw").innerHTML="";document.body.style.overflow=""};
+window.dbl=el=>{const n=Date.now();if(n-(el._t||0)<320){el.classList.toggle("z");el._t=0}else el._t=n};
+window.openViewer=i=>{
+  const a=S.ads.find(x=>x.id===route()[1]);if(!a)return;
+  const imgs=(a.images||[]).map(safeImg).filter(Boolean);if(!imgs.length)return;
+  const v=$("#vw");
+  v.innerHTML=`<button class="vx" onclick="closeViewer()" aria-label="إغلاق">×</button><div class="vn" id="vn">${i+1} / ${imgs.length}</div><div class="vt" id="vt">${imgs.map(m=>`<div class="vs"><img src="${m}" alt="" onclick="dbl(this)"></div>`).join("")}</div><div class="vh">اضغط مرتين للتكبير</div>`;
+  v.classList.add("s");document.body.style.overflow="hidden";
+  try{history.pushState({vw:1},"")}catch(e){}
+  const t=$("#vt");
+  t.children[i].scrollIntoView({inline:"center",block:"nearest"});
+  t.addEventListener("scroll",()=>{const n=Math.round(Math.abs(t.scrollLeft)/t.clientWidth);$("#vn").textContent=(n+1)+" / "+imgs.length},{passive:true});
+};
+window.closeViewer=()=>{if(history.state&&history.state.vw)history.back();else hideViewer()};
+addEventListener("popstate",hideViewer);
+addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#vw").classList.contains("s"))closeViewer()});
 
 /* ---------- Router ---------- */
 const route=()=>{const h=location.hash.replace(/^#\/?/,"").split("/");return[h[0]||"home",h[1]]};
@@ -263,7 +341,7 @@ function render(){
   const [r,id]=route();setNav(r);
   if(r==="ad")return viewAd(id);
   if(r==="add")return viewAdd();
-  if(r==="mine")return viewMine();
+  if(r==="mine")return S.loaded?viewMine():($("#app").innerHTML=skGrid());
   const pub=a=>a.status!=="sold"&&a.status!=="hidden";
   if(r==="favs")return viewList(S.ads.filter(a=>S.favs.includes(a.id)&&a.status!=="hidden"),empty("heart","لا توجد إعلانات في المفضلة بعد"),false);
   if(r==="auctions")return viewList(S.ads.filter(a=>a.type==="auction"&&pub(a)),empty("gavel","لا توجد مزادات حالياً"),true);
@@ -276,12 +354,17 @@ function card(a){
   const price=au?(a.bidCount?a.currentBid:a.startPrice):a.price;
   const ended=au&&Date.now()>=a.endAt;
   const fav=S.favs.includes(a.id);
+  let tg="";
+  if(a.status==="hidden")tg=`<span class="tag" style="background:#b42318">مخفي</span>`;
+  else if(a.status==="sold")tg=`<span class="tag" style="background:#555">تم البيع</span>`;
+  else if(au){const rem=Number(a.endAt)-Date.now();tg=`<span class="tag ${!ended&&rem<216e5?"hot":""}">${ic("clock",12)}${ended?"انتهى":left(a.endAt)}</span>`}
+  else if(Date.now()-Number(a.createdAt)<864e5)tg=`<span class="tag new">جديد</span>`;
   return `<a class="card" href="#/ad/${a.id}">
-    <div class="im ${im?"":"ph"}" style="${im?`background-image:url(${im})`:""}">${im?"":ic(CATICON[a.category]||"grid",38)}</div>
-    ${a.status==="hidden"?`<span class="tag" style="background:#b42318">مخفي</span>`:au?`<span class="tag">${ic("clock",12)}${ended?"انتهى":left(a.endAt)}</span>`:""}
+    <div class="im ${im?"":"ph"}">${im?`<img src="${im}" alt="" loading="lazy" decoding="async">`:ic(CATICON[a.category]||"grid",38)}</div>
+    ${tg}
     <button class="fav ${fav?"on":""}" aria-label="المفضلة" onclick="event.preventDefault();event.stopPropagation();toggleFav('${a.id}')">${ic("heart",17,fav)}</button>
     <div class="bd"><h3>${esc(a.title)}</h3><div class="pr">${au?(a.bidCount?"":"يبدأ من ")+money(price,a.currency):(price?money(price,a.currency):"السعر عند التواصل")}</div>
-    <div class="mt"><span class="it">${ic("pin",12)}${esc(a.city)}</span><span>${ago(a.createdAt)}</span></div></div></a>`;
+    <div class="mt"><span class="it">${ic("pin",12)}${esc(a.city)}</span>${au?`<span class="it">${ic("gavel",12)}${Number(a.bidCount)||0} مزايدة</span>`:`<span>${ago(a.createdAt)}</span>`}</div></div></a>`;
 }
 function viewList(list,emptyHtml,filters){
   let h="";
@@ -296,6 +379,7 @@ function viewList(list,emptyHtml,filters){
   fillList();
 }
 function fillList(){
+  if(!S.loaded){$("#lst").innerHTML=skGrid();return}
   const {list,emptyHtml,filters}=window._cur;
   let l=list;
   if(filters){
@@ -318,11 +402,11 @@ window.toggleFav=async id=>{
 function waLink(p,t){let n=String(p).replace(/\D/g,"");if(n.startsWith("00"))n=n.slice(2);if(n.startsWith("967"));else{n=n.replace(/^0+/,"");n="967"+n}return"https://wa.me/"+n+"?text="+encodeURIComponent(t)}
 function viewAd(id){
   const a=S.ads.find(x=>x.id===id);
-  if(!a){$("#app").innerHTML='<div class="empty">جاري التحميل...</div>';return}
+  if(!a){$("#app").innerHTML=S.loaded?empty("flag","الإعلان غير موجود أو تم حذفه"):skDetail();return}
   const au=a.type==="auction";const mine=S.user&&S.user.uid===a.uid;
   if(a.status==="hidden"&&!mine){$("#app").innerHTML=empty("flag","هذا الإعلان غير متاح");return}
   const imgs=(a.images||[]).map(safeImg).filter(Boolean);
-  let h=imgs.length?`<div class="gal">${imgs.map(i=>`<img src="${i}" alt="">`).join("")}</div>`:"";
+  let h=imgs.length?`<div class="gal">${imgs.map((i,k)=>`<img src="${i}" alt="" onclick="openViewer(${k})">`).join("")}</div>`:"";
   h+=`<div class="box ${au?"auc":""}"><h2 style="margin:0 0 8px;font-size:19px">${esc(a.title)}</h2>`;
   if(au){
     h+=`<div class="mt">السعر الحالي</div><div class="big" id="curP"></div>
@@ -344,7 +428,8 @@ function viewAd(id){
 }
 function liveDetail(){
   const id=route()[1];const a=S.ads.find(x=>x.id===id);
-  if(!a||a.type!=="auction"){if(a&&!$("#curP")&&route()[0]==="ad")viewAd(id);return}
+  if(!a){if(route()[0]==="ad")viewAd(id);return}
+  if(a.type!=="auction"){if(a&&!$("#curP")&&route()[0]==="ad")viewAd(id);return}
   if(!$("#curP")){viewAd(id);return}
   const ended=Date.now()>=a.endAt;
   $("#curP").textContent=money(a.bidCount?a.currentBid:a.startPrice,a.currency);

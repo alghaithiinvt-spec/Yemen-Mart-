@@ -11,12 +11,14 @@ firebase.initializeApp({
 
 const messaging=firebase.messaging();
 
+/* ---------- الإشعارات ---------- */
 // الرسائل تصل كبيانات (data) فقط، فنعرضها نحن ونتحكم بالضغط عليها
 messaging.onBackgroundMessage(p=>{
   const d=p.data||{};
   return self.registration.showNotification(d.title||"سوق يمن مارت",{
     body:d.body||"",
     icon:"icon-192.png",
+    badge:"icon-192.png",
     data:{url:d.url||"./"}
   });
 });
@@ -33,4 +35,35 @@ self.addEventListener("notificationclick",e=>{
     }
     return clients.openWindow(url);
   }));
+});
+
+/* ---------- التطبيق (PWA): تخزين الواجهة للفتح السريع ---------- */
+const CACHE="ym-shell-v1";
+const SHELL=["./","index.html","manifest.json","logo.png","icon-192.png"];
+
+self.addEventListener("install",e=>{
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c=>Promise.all(SHELL.map(u=>c.add(u).catch(()=>{})))));
+});
+
+self.addEventListener("activate",e=>{
+  e.waitUntil(
+    caches.keys()
+      .then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
+      .then(()=>self.clients.claim())
+  );
+});
+
+// الشبكة أولاً (لتصلك التحديثات دائماً)، والنسخة المخزّنة عند انقطاع الإنترنت
+self.addEventListener("fetch",e=>{
+  const r=e.request;
+  if(r.method!=="GET"||new URL(r.url).origin!==self.location.origin)return;
+  e.respondWith(
+    fetch(r,{cache:"no-cache"})
+      .then(res=>{
+        if(res.ok){const cp=res.clone();caches.open(CACHE).then(c=>c.put(r,cp))}
+        return res;
+      })
+      .catch(()=>caches.match(r).then(m=>m||(r.mode==="navigate"?caches.match("index.html"):null)||Response.error()))
+  );
 });
