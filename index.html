@@ -123,6 +123,46 @@ label{font-size:13px;color:var(--m);display:block;margin-bottom:4px}
 .vs img.z{max-width:none;max-height:none;width:230%;height:auto}
 .vx{position:absolute;top:calc(10px + env(safe-area-inset-top));left:12px;z-index:2;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:26px;line-height:1}
 .vn{position:absolute;top:calc(20px + env(safe-area-inset-top));right:0;left:0;text-align:center;color:#fff;font-size:14px;pointer-events:none;z-index:1}
+.hero{background:var(--p);color:#fff;border-radius:18px;padding:18px 16px;margin-bottom:12px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;left:-30px;top:-44px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,122,34,.6),transparent 70%)}
+.hero h2{margin:0 0 6px;font-size:20px;position:relative}
+.hero p{margin:0 0 14px;font-size:13px;color:#d9d4ce;line-height:1.7;position:relative}
+.hero .btn{position:relative;width:auto;display:inline-flex;padding:10px 18px;font-size:14px}
+.srow{display:flex;gap:8px;margin-bottom:12px;align-items:stretch}
+.srow .srch{flex:1;min-width:0}
+.srow input,.srow select{margin:0}
+.srow select{width:118px;flex:none;padding:12px 8px;font-size:13px}
+.cats{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:4px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.ct{flex:none;width:68px;text-align:center;font-size:11.5px;color:var(--t);line-height:1.35}
+.ct i{display:flex;width:56px;height:56px;margin:0 auto 6px;border-radius:18px;background:#fff1e6;color:var(--oa);align-items:center;justify-content:center;border:1px solid #ffe0c8;transition:.15s}
+.ct.on i{background:var(--p);color:#fff;border-color:var(--p)}
+.ct.on{font-weight:700}
+.sh{display:flex;justify-content:space-between;align-items:center;margin:6px 2px 10px;font-weight:700;font-size:16px}
+.sh span{font-weight:400;font-size:12px;color:var(--m)}
+.empty .eb{width:84px;height:84px;border-radius:50%;background:#fff;border:1px solid var(--b);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.empty .eb .ic{margin:0}
+.prof{display:flex;align-items:center;gap:12px}
+.prof .av{width:58px;height:58px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;overflow:hidden;flex:none}
+.prof .av img{width:100%;height:100%;object-fit:cover}
+.prof b{font-size:17px;display:block}
+.prof small{color:var(--m);font-size:12.5px;word-break:break-all}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stats a{background:#faf9f7;border:1px solid var(--b);border-radius:12px;padding:10px 4px;text-align:center;text-decoration:none;color:var(--t)}
+.stats b{display:block;font-size:19px;color:var(--oa)}
+.stats span{font-size:11.5px;color:var(--m)}
+.list{background:#fff;border:1px solid var(--b);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.li{display:flex;align-items:center;gap:12px;padding:13px 14px;width:100%;background:none;border:0;border-bottom:1px solid var(--b);font:inherit;text-align:right;color:var(--t);text-decoration:none}
+.li:last-child{border-bottom:0}
+.li .ico{width:36px;height:36px;border-radius:11px;background:#fff1e6;color:var(--oa);display:flex;align-items:center;justify-content:center;flex:none}
+.li .tx{flex:1;font-weight:500}
+.li small{display:block;color:var(--m);font-size:12px;font-weight:400}
+.li.red{color:#b42318}.li.red .ico{background:#fdecea;color:#b42318}
+.sw{width:44px;height:26px;border-radius:13px;background:#d8d3cd;position:relative;flex:none;transition:.2s}
+.sw:after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sw.on{background:var(--o)}
+.sw.on:after{right:21px}
+#toast{box-shadow:0 6px 18px rgba(0,0,0,.25);font-weight:500}
 .vh{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom));right:0;left:0;text-align:center;color:rgba(255,255,255,.6);font-size:12px;pointer-events:none}
 </style>
 </head>
@@ -181,6 +221,9 @@ shirt:'<path d="M8 3 3 6l2 4 2-1v11h10V9l2 1 2-4-5-3a4 4 0 0 1-8 0z"/>',
 briefcase:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/>',
 wrench:'<path d="M14.700 6.300a1 1 0 0 0 0 1.400l1.600 1.600a1 1 0 0 0 1.400 0l3.770-3.770a6 6 0 0 1-7.940 7.940l-6.910 6.910a2.120 2.120 0 0 1-3-3l6.910-6.910a6 6 0 0 1 7.940-7.940l-3.760 3.760z"/>',
 paw:'<circle cx="6" cy="10" r="1.800"/><circle cx="10" cy="5.500" r="1.800"/><circle cx="15" cy="5.500" r="1.800"/><circle cx="19" cy="10" r="1.800"/><path d="M12.500 11c-3 0-6 3-6 6 0 2 1.500 3 3 3 1.200 0 2-.5 3-.5s1.800.5 3 .5c1.500 0 3-1 3-3 0-3-3-6-6-6z"/>',
+logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
+shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+download:'<path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/>',
 bell:'<path d="M6 17v-6a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21h4"/>',
 grid:'<rect x="4" y="4" width="6.500" height="6.500" rx="1.200"/><rect x="13.500" y="4" width="6.500" height="6.500" rx="1.200"/><rect x="4" y="13.500" width="6.500" height="6.500" rx="1.200"/><rect x="13.500" y="13.500" width="6.500" height="6.500" rx="1.200"/>'
 };
@@ -335,7 +378,8 @@ addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#vw").classList.contains(
 const route=()=>{const h=location.hash.replace(/^#\/?/,"").split("/");return[h[0]||"home",h[1]]};
 window.addEventListener("hashchange",render);
 function setNav(r){["n1","n2","n3","n4","n5"].forEach(i=>$("#"+i).classList.remove("on"));const m={home:"n1",auctions:"n2",favs:"n4",mine:"n5"}[r];if(m)$("#"+m).classList.add("on")}
-const empty=(icon,msg)=>`<div class="empty">${ic(icon,44)}<p>${msg}</p></div>`;
+const empty=(icon,msg,act="")=>`<div class="empty"><div class="eb">${ic(icon,34)}</div><p>${msg}</p>${act}</div>`;
+const actBtn=(href,ico,txt,cls="o")=>`<a class="btn ${cls}" href="${href}" style="max-width:250px;margin:14px auto 0">${ic(ico,19)}${txt}</a>`;
 function render(){
   if(S.unsubBids){S.unsubBids();S.unsubBids=null}
   const [r,id]=route();setNav(r);
@@ -343,9 +387,9 @@ function render(){
   if(r==="add")return viewAdd();
   if(r==="mine")return S.loaded?viewMine():($("#app").innerHTML=skGrid());
   const pub=a=>a.status!=="sold"&&a.status!=="hidden";
-  if(r==="favs")return viewList(S.ads.filter(a=>S.favs.includes(a.id)&&a.status!=="hidden"),empty("heart","لا توجد إعلانات في المفضلة بعد"),false);
-  if(r==="auctions")return viewList(S.ads.filter(a=>a.type==="auction"&&pub(a)),empty("gavel","لا توجد مزادات حالياً"),true);
-  viewList(S.ads.filter(pub),empty("tag","لا توجد إعلانات بعد. كن أول من ينشر"),true);
+  if(r==="favs")return viewList(S.ads.filter(a=>S.favs.includes(a.id)&&a.status!=="hidden"),empty("heart","لا توجد إعلانات في المفضلة بعد",actBtn("#/","search","تصفّح الإعلانات","l")),false);
+  if(r==="auctions")return viewList(S.ads.filter(a=>a.type==="auction"&&pub(a)),empty("gavel","لا توجد مزادات حالياً",actBtn("#/add","plus","انشر مزاداً")),true);
+  viewList(S.ads.filter(pub),empty("tag","لا توجد إعلانات بعد. كن أول من ينشر",actBtn("#/add","plus","انشر إعلانك مجاناً")),true);
 }
 
 /* ---------- List ---------- */
@@ -367,27 +411,35 @@ function card(a){
     <div class="mt"><span class="it">${ic("pin",12)}${esc(a.city)}</span>${au?`<span class="it">${ic("gavel",12)}${Number(a.bidCount)||0} مزايدة</span>`:`<span>${ago(a.createdAt)}</span>`}</div></div></a>`;
 }
 function viewList(list,emptyHtml,filters){
+  const r=route()[0];
   let h="";
   if(filters){
-    h+=`<div class="srch">${ic("search",18)}<input id="q" placeholder="ابحث عن شيء..." value="${esc(S.q)}" oninput="S.q=this.value;fillList()"></div>
-    <select onchange="S.city=this.value;refreshList()"><option value="">كل المدن</option>${CITIES.map(c=>`<option ${S.city===c?"selected":""}>${c}</option>`).join("")}</select>
-    <div class="chips"><span class="chip ${!S.cat?"on":""}" onclick="S.cat='';refreshList()">${ic("grid",16)}الكل</span>${CATS.map(c=>`<span class="chip ${S.cat===c?"on":""}" onclick="S.cat='${c}';refreshList()">${ic(CATICON[c],16)}${c}</span>`).join("")}</div>`;
+    if(r==="home"&&!S.cat&&!S.city)h+=`<div class="hero"><h2>سوقك الأول في اليمن</h2><p>بِع واشترِ وزايد على المزادات بسهولة، وكل شيء مجاني.</p><a class="btn o" href="#/add">${ic("plus",18)}انشر إعلانك مجاناً</a></div>`;
+    h+=`<div class="srow"><div class="srch">${ic("search",18)}<input id="q" placeholder="ابحث عن شيء..." value="${esc(S.q)}" oninput="S.q=this.value;fillList()"></div>
+    <select aria-label="المدينة" onchange="S.city=this.value;refreshList()"><option value="">كل المدن</option>${CITIES.map(c=>`<option ${S.city===c?"selected":""}>${c}</option>`).join("")}</select></div>
+    <div class="cats"><div class="ct ${!S.cat?"on":""}" onclick="S.cat='';refreshList()"><i>${ic("grid",24)}</i>الكل</div>${CATS.map(c=>`<div class="ct ${S.cat===c?"on":""}" onclick="S.cat='${c}';refreshList()"><i>${ic(CATICON[c],24)}</i>${c}</div>`).join("")}</div>`;
   }
   h+=`<div id="lst"></div>`;
   $("#app").innerHTML=h;
-  window._cur={list,emptyHtml,filters};
+  window._cur={list,emptyHtml,filters,title:r==="auctions"?"المزادات الجارية":"أحدث الإعلانات"};
   fillList();
 }
 function fillList(){
   if(!S.loaded){$("#lst").innerHTML=skGrid();return}
-  const {list,emptyHtml,filters}=window._cur;
+  const {list,emptyHtml,filters,title}=window._cur;
   let l=list;
+  const filtered=filters&&(S.q.trim()||S.cat||S.city);
   if(filters){
     const q=S.q.trim().toLowerCase();
     l=l.filter(a=>(!S.cat||a.category===S.cat)&&(!S.city||a.city===S.city)&&(!q||(a.title+" "+a.desc).toLowerCase().includes(q)));
   }
-  $("#lst").innerHTML=l.length?`<div class="grid">${l.map(card).join("")}</div>`:emptyHtml;
+  if(!l.length){
+    $("#lst").innerHTML=filtered?empty("search","لا توجد نتائج مطابقة لبحثك",`<button class="btn l" style="max-width:220px;margin:14px auto 0" onclick="clearFilters()">مسح الفلاتر</button>`):emptyHtml;
+    return;
+  }
+  $("#lst").innerHTML=(filters?`<div class="sh">${title}<span>${l.length} إعلان</span></div>`:"")+`<div class="grid">${l.map(card).join("")}</div>`;
 }
+window.clearFilters=()=>{S.q="";S.cat="";S.city="";render()};
 window.fillList=fillList;
 window.refreshList=()=>{const r=route()[0];if(r==="home"||r==="auctions")render()};
 window.toggleFav=async id=>{
@@ -503,14 +555,33 @@ window.sendReport=async()=>{
 
 /* ---------- Mine ---------- */
 function viewMine(){
-  if(!S.user){$("#app").innerHTML=`<div class="empty">${ic("user",44)}<p>سجّل الدخول لعرض إعلاناتك</p><br><button class="btn" onclick="login()">الدخول بحساب جوجل</button></div>`;return}
-  const mine=S.ads.filter(a=>a.uid===S.user.uid);
-  const bids=S.ads.filter(a=>a.type==="auction"&&a.topBidderUid===S.user.uid);
-  const nb=("Notification" in window&&Notification.permission==="granted")?`<div class="box"><div class="win">${ic("check",20)}الإشعارات مفعّلة</div></div>`:`<div class="box"><b>الإشعارات</b><p class="mt" style="margin:6px 0 10px">فعّل الإشعارات لتصلك تنبيهات المزادات ورسائل الإدارة.</p><button class="btn o" onclick="enableNotifs()">${ic("bell",19)}تفعيل الإشعارات</button></div>`;
-  let h=nb+`<div class="h3">${ic("tag",20)}إعلاناتي (${mine.length})</div>`+(mine.length?`<div class="grid">${mine.map(card).join("")}</div>`:empty("tag","لم تنشر شيئاً بعد"));
+  if(!S.user){$("#app").innerHTML=empty("user","سجّل الدخول لعرض حسابك وإعلاناتك",`<button class="btn" style="max-width:250px;margin:14px auto 0" onclick="login()">الدخول بحساب جوجل</button>`);return}
+  const u=S.user;
+  const mine=S.ads.filter(a=>a.uid===u.uid);
+  const bids=S.ads.filter(a=>a.type==="auction"&&a.topBidderUid===u.uid);
+  const nm=u.displayName||"مستخدم";
+  const av=u.photoURL?`<img src="${esc(u.photoURL)}" alt="">`:esc(nm.trim().charAt(0));
+  const on=("Notification" in window)&&Notification.permission==="granted";
+  const canInst=!isStandalone()&&(_ip||isIOS());
+  const isAdm=u.email==="yemen.mart.sq@gmail.com";
+  let h=`<div class="box"><div class="prof"><div class="av">${av}</div><div><b>${esc(nm)}</b><small>${esc(u.email||"")}</small></div></div>
+  <div class="stats"><a href="#/mine"><b>${mine.length}</b><span>إعلاناتي</span></a><a href="#/favs"><b>${S.favs.length}</b><span>المفضلة</span></a><a href="#/auctions"><b>${bids.length}</b><span>مزادات أقودها</span></a></div></div>
+  <div class="list">
+    <button class="li" onclick="notifRow()"><span class="ico">${ic("bell",19)}</span><span class="tx">الإشعارات<small>${on?"مفعّلة على هذا الجهاز":"فعّلها لتصلك تنبيهات المزادات"}</small></span><span class="sw ${on?"on":""}"></span></button>
+    ${canInst?`<button class="li" onclick="installRow()"><span class="ico">${ic("download",19)}</span><span class="tx">تثبيت التطبيق<small>أضفه إلى الشاشة الرئيسية</small></span></button>`:""}
+    ${isAdm?`<a class="li" href="admin.html"><span class="ico">${ic("shield",19)}</span><span class="tx">لوحة الإدارة</span></a>`:""}
+    <button class="li red" onclick="authBtn()"><span class="ico">${ic("logout",19)}</span><span class="tx">تسجيل الخروج</span></button>
+  </div>`;
+  h+=`<div class="h3">${ic("tag",20)}إعلاناتي (${mine.length})</div>`+(mine.length?`<div class="grid">${mine.map(card).join("")}</div>`:empty("tag","لم تنشر شيئاً بعد",actBtn("#/add","plus","انشر إعلانك الأول")));
   if(bids.length)h+=`<div class="h3">${ic("gavel",20)}مزادات أنا الأعلى فيها (${bids.length})</div><div class="grid">${bids.map(card).join("")}</div>`;
   $("#app").innerHTML=h;
 }
+window.notifRow=()=>{
+  if(!("Notification" in window))return toast("متصفحك لا يدعم الإشعارات. على الآيفون أضف التطبيق للشاشة الرئيسية أولاً");
+  if(Notification.permission==="granted")return toast("لإيقاف الإشعارات: إعدادات المتصفح ثم إعدادات الموقع");
+  enableNotifs();
+};
+window.installRow=()=>{if(_ip)doInstall();else toast("اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»")};
 
 /* ---------- Add ---------- */
 let draft={type:"ad",images:[]};
