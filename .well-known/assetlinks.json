@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.alghaithiinvt_spec.twa",
+        "sha256_cert_fingerprints": ["8F:7C:A1:7D:8D:2C:E5:97:C4:C3:B3:6F:34:28:71:BC:9F:9B:05:4D:C5:E9:80:26:5F:46:2A:18:DF:63:CA:30"]
+      }
+    }]
