@@ -173,6 +173,22 @@ function viewStats(){
 }
 
 /* ---- Push ---- */
+async function pushTo(uid,title,body,url){
+  if(!uid)return false;
+  try{
+    const tok=await S.user.getIdToken();
+    const r=await fetch(PUSH_URL,{method:"POST",headers:{"Authorization":"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({uid,title,body,url})});
+    const j=await r.json().catch(()=>({}));
+    return r.ok&&j.ok?(j.sent||0):false;
+  }catch(e){return false}
+}
+window.msgOwner=async id=>{
+  const a=S.ads.find(x=>x.id===id);if(!a)return toast("الإعلان غير موجود");
+  const m=prompt("نص الإشعار لصاحب الإعلان «"+a.title+"»:");
+  if(!m||!m.trim())return;
+  const n=await pushTo(a.uid,"رسالة من الإدارة",m.trim().slice(0,300),"./#/ad/"+a.id);
+  toast(n===false?"تعذر الإرسال":n>0?"تم إرسال الإشعار":"الناشر لم يفعّل الإشعارات");
+};
 const PUSH_LINKS=[["./","الصفحة الرئيسية"],["./#/auctions","صفحة المزادات"],["./#/add","صفحة نشر إعلان"]];
 function viewPush(){
   $("#body").innerHTML=`<div class="box"><h4>إرسال إشعار لجميع المستخدمين</h4>
@@ -218,7 +234,7 @@ function viewReports(){
     <div class="mt"><span class="pill red">${esc(r.reason)}</span>${isOpen&&openCnt[r.adId]>1?`<span class="pill or">${openCnt[r.adId]} بلاغات على هذا الإعلان</span>`:""}${!isOpen?`<span class="pill gr">${r.status==="dismissed"?"تم التجاهل":"تمت المعالجة"}</span>`:""}${!a?`<span class="pill">الإعلان محذوف</span>`:a.status==="hidden"?`<span class="pill">مخفي</span>`:""}</div>
     ${r.note?`<p style="margin:8px 0 0;line-height:1.7;font-size:14px">${esc(r.note)}</p>`:""}
     <div class="mt"><span class="it">${ic("user",13)} ${esc(r.userName)}</span><span>${ago(r.createdAt)}</span></div>
-    ${isOpen?`<div class="acts">${a&&a.status!=="hidden"?`<button class="btn s" onclick="hideAd('${esc(r.adId)}')">${ic("eyeoff",15)}إخفاء الإعلان</button>`:""}${a?`<button class="btn r s" onclick="delAd('${esc(r.adId)}')">${ic("trash",15)}حذف الإعلان</button>`:""}<button class="btn l s" onclick="dismiss('${esc(r.id)}')">${ic("x",15)}تجاهل البلاغ</button></div>`:""}</div>`;
+    ${isOpen?`<div class="acts">${a&&a.status!=="hidden"?`<button class="btn s" onclick="hideAd('${esc(r.adId)}')">${ic("eyeoff",15)}إخفاء الإعلان</button>`:""}${a?`<button class="btn l s" onclick="msgOwner('${esc(r.adId)}')">${ic("bell",15)}إشعار الناشر</button><button class="btn r s" onclick="delAd('${esc(r.adId)}')">${ic("trash",15)}حذف الإعلان</button>`:""}<button class="btn l s" onclick="dismiss('${esc(r.id)}')">${ic("x",15)}تجاهل البلاغ</button></div>`:""}</div>`;
   }).join("");
   $("#body").innerHTML=h;
 }
@@ -230,14 +246,15 @@ window.dismiss=async id=>{
   try{await updateDoc(doc(db,"reports",id),{status:"dismissed"});S.reports.find(r=>r.id===id).status="dismissed";toast("تم تجاهل البلاغ");render()}catch(e){toast("تعذر التنفيذ")}
 };
 window.hideAd=async id=>{
-  try{await updateDoc(doc(db,"ads",id),{status:"hidden"});const a=S.ads.find(x=>x.id===id);if(a)a.status="hidden";await closeReportsFor(id,"resolved");toast("تم إخفاء الإعلان");render()}catch(e){toast("تعذر التنفيذ")}
+  try{await updateDoc(doc(db,"ads",id),{status:"hidden"});const a=S.ads.find(x=>x.id===id);if(a)a.status="hidden";await closeReportsFor(id,"resolved");toast("تم إخفاء الإعلان");render();if(a)pushTo(a.uid,"تم إخفاء إعلانك","تم إخفاء إعلانك «"+a.title+"» لمخالفته شروط الموقع.","./#/mine")}catch(e){toast("تعذر التنفيذ")}
 };
 window.showAd=async id=>{
-  try{await updateDoc(doc(db,"ads",id),{status:"active"});const a=S.ads.find(x=>x.id===id);if(a)a.status="active";toast("تم إظهار الإعلان");render()}catch(e){toast("تعذر التنفيذ")}
+  try{await updateDoc(doc(db,"ads",id),{status:"active"});const a=S.ads.find(x=>x.id===id);if(a)a.status="active";toast("تم إظهار الإعلان");render();if(a)pushTo(a.uid,"تمت إعادة إظهار إعلانك","تمت إعادة إظهار إعلانك «"+a.title+"».","./#/ad/"+a.id)}catch(e){toast("تعذر التنفيذ")}
 };
 window.delAd=async id=>{
   if(!confirm("حذف الإعلان نهائياً؟ لا يمكن التراجع."))return;
-  try{await deleteDoc(doc(db,"ads",id));S.ads=S.ads.filter(x=>x.id!==id);await closeReportsFor(id,"resolved");toast("تم حذف الإعلان");render()}catch(e){toast("تعذر التنفيذ")}
+  const a0=S.ads.find(x=>x.id===id);
+  try{await deleteDoc(doc(db,"ads",id));S.ads=S.ads.filter(x=>x.id!==id);await closeReportsFor(id,"resolved");toast("تم حذف الإعلان");render();if(a0)pushTo(a0.uid,"تم حذف إعلانك","تم حذف إعلانك «"+a0.title+"» لمخالفته شروط الموقع.","./#/mine")}catch(e){toast("تعذر التنفيذ")}
 };
 
 /* ---- Ads ---- */
@@ -255,7 +272,7 @@ function fillAds(){
     return `<div class="box"><div class="ad"><div class="th" style="${im?`background-image:url(${im})`:""}">${im?"":ic("tag",24)}</div><div class="in"><h4>${esc(a.title)}</h4>
     <div class="mt"><span>${esc(a.city)}</span><span>${esc(a.userName)}</span><span>${ago(a.createdAt)}</span></div>
     <div class="mt">${a.type==="auction"?'<span class="pill or">مزاد</span>':""}${a.status==="hidden"?'<span class="pill red">مخفي</span>':""}${a.status==="sold"?'<span class="pill gr">مباع</span>':""}</div></div></div>
-    <div class="acts"><a class="btn l s" href="index.html#/ad/${esc(a.id)}" target="_blank" rel="noopener">${ic("link",15)}فتح</a>${a.status==="hidden"?`<button class="btn l s" onclick="showAd('${esc(a.id)}')">${ic("eye",15)}إظهار</button>`:`<button class="btn s" onclick="hideAd('${esc(a.id)}')">${ic("eyeoff",15)}إخفاء</button>`}<button class="btn r s" onclick="delAd('${esc(a.id)}')">${ic("trash",15)}حذف</button></div></div>`;
+    <div class="acts"><a class="btn l s" href="index.html#/ad/${esc(a.id)}" target="_blank" rel="noopener">${ic("link",15)}فتح</a>${a.status==="hidden"?`<button class="btn l s" onclick="showAd('${esc(a.id)}')">${ic("eye",15)}إظهار</button>`:`<button class="btn s" onclick="hideAd('${esc(a.id)}')">${ic("eyeoff",15)}إخفاء</button>`}<button class="btn l s" onclick="msgOwner('${esc(a.id)}')">${ic("bell",15)}إشعار الناشر</button><button class="btn r s" onclick="delAd('${esc(a.id)}')">${ic("trash",15)}حذف</button></div></div>`;
   }).join(""):`<div class="empty">${ic("search",44)}<p>لا توجد نتائج</p></div>`;
 }
 window.S=S;window.load=load;window.viewReports=viewReports;window.viewAds=viewAds;window.fillAds=fillAds;

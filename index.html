@@ -108,7 +108,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getFirestore,collection,doc,addDoc,setDoc,getDoc,updateDoc,deleteDoc,query,orderBy,limit,onSnapshot,runTransaction,arrayUnion,arrayRemove} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-import {getMessaging,getToken,onMessage,isSupported} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js";
+import {getMessaging,getToken,deleteToken,onMessage,isSupported} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging.js";
 
 /* ====== ضع إعدادات Firebase الخاصة بك هنا ====== */
 const firebaseConfig={
@@ -185,7 +185,7 @@ window.S=S;
 
 /* ---------- Auth ---------- */
 window.login=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){if(e.code!=="auth/popup-closed-by-user")toast("تعذر تسجيل الدخول")}};
-window.authBtn=()=>S.user?(confirm("تسجيل الخروج؟")&&signOut(auth)):login();
+window.authBtn=()=>{if(!S.user)return login();if(!confirm("تسجيل الخروج؟"))return;dropToken().finally(()=>signOut(auth))};
 onAuthStateChanged(auth,async u=>{
   S.user=u;setUserBtn(u);
   S.favs=[];
@@ -195,6 +195,7 @@ onAuthStateChanged(auth,async u=>{
 });
 
 /* ---------- Notifications (FCM) ---------- */
+const PUSH_URL="https://yemen-mart-push.yemen-mart-sq.workers.dev";
 const VAPID_KEY="BJ705bEHJJn47EDFDfAFqiYqWezFg0RtMzrQkcmKnvJjrh1ppA6lY8vD8vtuLeCTd2jVq0AblaqM4cnik6Y0FCM";
 let _msg=null;
 async function getMsg(){
@@ -213,6 +214,22 @@ async function saveToken(){
   if(!token)return false;
   await setDoc(doc(db,"users",S.user.uid),{fcmTokens:arrayUnion(token),notifOn:true},{merge:true});
   return true;
+}
+async function dropToken(){
+  try{
+    if(!S.user||!("Notification" in window)||Notification.permission!=="granted"||VAPID_KEY.startsWith("PUT_"))return;
+    const m=await getMsg();if(!m)return;
+    const reg=await navigator.serviceWorker.register("firebase-messaging-sw.js");
+    const t=await getToken(m,{vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
+    if(t)await setDoc(doc(db,"users",S.user.uid),{fcmTokens:arrayRemove(t)},{merge:true});
+    await deleteToken(m);
+  }catch(e){}
+}
+async function notifyBid(adId,bidId){
+  try{
+    const tok=await S.user.getIdToken();
+    fetch(PUSH_URL+"/bid",{method:"POST",headers:{"Authorization":"Bearer "+tok,"Content-Type":"application/json"},body:JSON.stringify({adId,bidId})}).catch(()=>{});
+  }catch(e){}
 }
 window.enableNotifs=async()=>{
   if(!S.user)return login();
@@ -355,6 +372,7 @@ window.placeBid=async id=>{
   if(!S.user)return login();
   const amt=Math.floor(Number($("#bidAmt").value));
   if(!amt||amt<=0)return toast("أدخل مبلغاً صحيحاً");
+  const bref=doc(collection(db,"ads",id,"bids"));
   try{
     await runTransaction(db,async tx=>{
       const ref=doc(db,"ads",id);const s=await tx.get(ref);
@@ -366,9 +384,9 @@ window.placeBid=async id=>{
       if(amt<min)throw new Error("أقل مبلغ مسموح: "+fmt(min));
       const name=S.user.displayName||"مستخدم";
       tx.update(ref,{currentBid:amt,bidCount:a.bidCount+1,topBidderUid:S.user.uid,topBidderName:name});
-      tx.set(doc(collection(ref,"bids")),{uid:S.user.uid,name,amount:amt,at:Date.now()});
+      tx.set(bref,{uid:S.user.uid,name,amount:amt,at:Date.now()});
     });
-    toast("تمت المزايدة بنجاح");
+    toast("تمت المزايدة بنجاح");notifyBid(id,bref.id);
   }catch(e){toast(e.message||"تعذرت المزايدة")}
 };
 window.markSold=async id=>{try{await updateDoc(doc(db,"ads",id),{status:"sold"});toast("تم التحديث");location.hash="#/mine"}catch(e){toast("تعذر التحديث")}};
